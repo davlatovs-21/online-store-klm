@@ -55,7 +55,11 @@ const customerContacts = [
  {key:'darya',name:'Контакт проекта Darya AI',initials:'DA',role:'Официальный канал проекта',company:'ООО «Дарёи санаи марказ»',phone:'+992 933 11 30 55',email:'kristina@greendarya.ai',source:'https://it-park.tj/en/darya-ai-en/'},
  {key:'amir',name:'Отдел по работе с партнёрами',initials:'AH',role:'Официальный контакт девелопера',company:'Amir Holding',phone:'+992 41 100 00 30',email:'info@amirholding.tj',source:'https://www.amirholding.tj/ru/'},
  {key:'artel',name:'Отдел международного сотрудничества',initials:'AR',role:'Официальный контакт производителя',company:'Artel',phone:'+998 71 202 77 88',email:'export@artelelectronics.com',source:'https://info.artelgroup.org/'},
- {key:'general',name:'Контакт заказчика уточняется',initials:'ЗК',role:'Официальная приёмная по инвестпроектам',company:'Госкоминвест РТ',phone:'+992 37 221 86 59',email:'info@investcom.tj',source:'https://investcom.tj/'}
+ {key:'ihg',name:'Команда развития IHG',initials:'IHG',role:'Официальный канал гостиничного развития',company:'IHG Hotels & Resorts',phone:'',email:'',source:'https://development.ihg.com/contact-us'},
+ {key:'shox',name:'Shox Med Center — контактный центр',initials:'SM',role:'Официальный контакт сети клиник',company:'Shox Med Center',phone:'+998 71 202 02 12',email:'info@shox.hospital',source:'https://shox.hospital/vrachi/eng'},
+ {key:'digital',name:'Маджиди Юсуф',initials:'МЮ',role:'Контакт заёмщика / получателя проекта',company:'Республика Таджикистан',phone:'',email:'majidovyusuf@gmail.com',source:'https://documents1.worldbank.org/curated/en/099102124222544081/pdf/P506611-b5d7ae8e-0f19-4ebc-b9fa-fe3fd55d7015.pdf'},
+ {key:'rmjm',name:'RMJM Dubai — проектная команда',initials:'RM',role:'Официальный проектный канал архитекторов',company:'RMJM Dubai',phone:'+971 4 563 88 88',email:'info@rmjmd3.com',source:'https://rmjm.com/contact-us/'},
+ {key:'general',name:'Приёмная инвестиционных проектов',initials:'ГК',role:'Официальный государственный канал',company:'Госкоминвест РТ',phone:'+992 37 221 86 59',email:'info@investcom.tj',source:'https://investcom.tj/'}
 ];
 
 const qs=s=>document.querySelector(s), qsa=s=>[...document.querySelectorAll(s)];
@@ -67,12 +71,18 @@ function customerContact(project){
  if(project.id==='P-007')return customerContacts.find(c=>c.key==='darya');
  if(['P-018','P-020','P-021','P-022','P-023'].includes(project.id))return customerContacts.find(c=>c.key==='amir');
  if(project.id==='P-016')return customerContacts.find(c=>c.key==='artel');
+ if(project.id==='P-008')return customerContacts.find(c=>c.key==='ihg');
+ if(project.id==='P-015')return customerContacts.find(c=>c.key==='shox');
+ if(project.id==='P-017')return customerContacts.find(c=>c.key==='digital');
+ if(project.id==='P-019')return customerContacts.find(c=>c.key==='rmjm');
  return customerContacts.find(c=>c.key==='general');
 }
 function customerContactMarkup(contact,compact=false){
- const phone=contact.phone.replaceAll(' ','');
- if(compact)return `<div class="project-contact"><span class="project-contact-avatar">${contact.initials}</span><p><small>СО СТОРОНЫ ЗАКАЗЧИКА</small><b>${contact.name}</b><a href="tel:${phone}" onclick="event.stopPropagation()">${contact.phone}</a><a href="mailto:${contact.email}" onclick="event.stopPropagation()">${contact.email}</a></p></div>`;
- return `<div class="dialog-contact"><span class="contact-avatar">${contact.initials}</span><p><b>${contact.name}</b><small>${contact.role} · ${contact.company}</small><a href="tel:${phone}">${contact.phone}</a><a href="mailto:${contact.email}">${contact.email}</a><a href="${contact.source}" target="_blank" rel="noopener">Проверить источник ↗</a></p></div>`;
+ const phone=contact.phone?`<a href="tel:${contact.phone.replaceAll(' ','')}"${compact?' onclick="event.stopPropagation()"':''}>${contact.phone}</a>`:'';
+ const email=contact.email?`<a href="mailto:${contact.email}"${compact?' onclick="event.stopPropagation()"':''}>${contact.email}</a>`:'';
+ const source=`<a href="${contact.source}" target="_blank" rel="noopener"${compact?' onclick="event.stopPropagation()"':''}>Официальный источник ↗</a>`;
+ if(compact)return `<div class="project-contact"><span class="project-contact-avatar">${contact.initials}</span><p><small>СО СТОРОНЫ ЗАКАЗЧИКА</small><b>${contact.name}</b>${phone}${email}${!phone&&!email?source:''}</p></div>`;
+ return `<div class="dialog-contact"><span class="contact-avatar">${contact.initials}</span><p><b>${contact.name}</b><small>${contact.role} · ${contact.company}</small>${phone}${email}${source}</p></div>`;
 }
 function init(){
  const highCount=projects.filter(p=>p.score>=80).length, averageScore=Math.round(projects.reduce((sum,p)=>sum+p.score,0)/projects.length), actionCount=projects.filter(p=>['Сигнал','Проверен'].includes(p.pipeline)).length;
