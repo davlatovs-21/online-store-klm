@@ -37,7 +37,7 @@
     <main>
       <header class="topbar">
         <button class="mobile-menu" id="menuBtn" aria-label="Открыть меню">☰</button>
-        <div class="global-search"><span>⌕</span><input id="globalSearch" placeholder="Найти проект, компанию или город…"><kbd>⌘ K</kbd></div>
+        <div class="global-search"><span aria-hidden="true">⌕</span><input id="globalSearch" type="search" aria-label="Глобальный поиск проектов" placeholder="Найти проект, компанию или город…"><kbd>Ctrl K</kbd></div>
         <button class="icon-btn" id="notificationBtn" title="Уведомления" aria-label="Открыть уведомления">♢<i></i><b id="notificationCount">0</b></button>
         <button class="primary-btn" id="scanBtn"><span>↻</span> Запустить мониторинг</button>
       </header>
@@ -137,13 +137,13 @@
       <section class="view" id="projects">
         <div class="page-heading compact"><div><p class="eyebrow">РЫНОК ТАДЖИКИСТАНА</p><h1>Проекты и возможности</h1><p>Проверенные объекты с оценкой применимости шинопровода.</p></div><button class="primary-btn" id="exportBtn">↓ Экспорт CSV</button></div>
         <div class="toolbar panel">
-          <div class="filter-search"><span>⌕</span><input id="projectSearch" placeholder="Поиск по реестру"></div>
-          <select id="sectorFilter"><option value="all">Все отрасли</option></select>
-          <select id="regionFilter"><option value="all">Все регионы</option></select>
-          <select id="statusFilter"><option value="all">Все стадии</option></select>
+          <div class="filter-search"><span aria-hidden="true">⌕</span><input id="projectSearch" type="search" aria-label="Поиск по реестру проектов" placeholder="Поиск по реестру"></div>
+          <select id="sectorFilter" aria-label="Фильтр по отрасли"><option value="all">Все отрасли</option></select>
+          <select id="regionFilter" aria-label="Фильтр по региону"><option value="all">Все регионы</option></select>
+          <select id="statusFilter" aria-label="Фильтр по стадии"><option value="all">Все стадии</option></select>
           <button class="ghost-btn" id="resetFilters">Сбросить</button>
         </div>
-        <div class="project-stats"><span>Найдено: <b id="resultCount">0</b></span><span class="legend"><i class="dot high"></i> высокий потенциал <i class="dot medium"></i> требует проверки</span></div>
+        <div class="project-stats"><span aria-live="polite">Найдено: <b id="resultCount">0</b></span><span class="legend"><i class="dot high"></i> высокий потенциал <i class="dot medium"></i> требует проверки</span></div>
         <div class="project-grid" id="projectGrid"></div>
         <div class="empty-state" id="emptyState"><span>⌕</span><h3>Проекты не найдены</h3><p>Измените фильтры или поисковый запрос.</p></div>
       </section>
@@ -155,7 +155,7 @@
 
       <section class="view" id="contacts">
         <div class="page-heading compact"><div><p class="eyebrow">КОМАНДА И ПАРТНЁРЫ</p><h1>Контактные лица</h1><p>Ответственные за развитие проектов, технические консультации и работу по регионам.</p></div></div>
-        <div class="contact-toolbar panel"><div class="filter-search"><span>⌕</span><input id="contactSearch" placeholder="Найти по имени, роли или региону"></div><span>Всего контактов: <b id="contactCount">0</b></span></div>
+        <div class="contact-toolbar panel"><div class="filter-search"><span aria-hidden="true">⌕</span><input id="contactSearch" type="search" aria-label="Поиск контактных лиц" placeholder="Найти по имени, роли или региону"></div><span aria-live="polite">Всего контактов: <b id="contactCount">0</b></span></div>
         <div class="contacts-grid" id="contactsGrid"></div>
       </section>
 
@@ -167,11 +167,11 @@
     </main>
   </div>
 
-  <dialog id="projectDialog">
-    <button class="dialog-close" id="closeDialog">×</button>
+  <dialog id="projectDialog" aria-labelledby="projectDialogTitle">
+    <button class="dialog-close" id="closeDialog" aria-label="Закрыть карточку проекта">×</button>
     <div id="dialogContent"></div>
   </dialog>
-  <div class="toast" id="toast"><span>✓</span><div><b>Мониторинг завершён</b><small>Новые сигналы добавлены в очередь проверки</small></div></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"><span aria-hidden="true">✓</span><div><b>Мониторинг завершён</b><small>Новые сигналы добавлены в очередь проверки</small></div></div>
   <script src="app.js"></script>
   <script src="notifications.js"></script>
 </body>
