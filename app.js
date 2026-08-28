@@ -39,15 +39,6 @@ const sources=[
  {name:'FG Group',type:'Системный интегратор',grade:'B',desc:'Локальный рынок инженерной и вычислительной инфраструктуры дата-центров.',url:'https://www.fg-group.tj/en/services/cod',count:1,icon:'FG'}
 ];
 
-const contacts = [
- {name:'Фаррух Саидов',initials:'ФС',role:'Руководитель по развитию',area:'Таджикистан',company:'KLM',focus:'Ключевые клиенты и коммерческие переговоры',phone:'+992 00 000 00 01',email:'f.saidov@klm.example'},
- {name:'Мадина Рахмонова',initials:'МР',role:'Менеджер проектов',area:'Душанбе и РРП',company:'KLM',focus:'Координация проектов и следующие шаги',phone:'+992 00 000 00 02',email:'m.rahmonova@klm.example'},
- {name:'Далер Назаров',initials:'ДН',role:'Региональный менеджер',area:'Согдийская область',company:'KLM',focus:'Промышленные предприятия и подрядчики',phone:'+992 00 000 00 03',email:'d.nazarov@klm.example'},
- {name:'Нигина Каримова',initials:'НК',role:'Менеджер по партнёрам',area:'Хатлонская область',company:'KLM',focus:'Девелоперы, EPC и локальные партнёры',phone:'+992 00 000 00 04',email:'n.karimova@klm.example'},
- {name:'Рустам Шарипов',initials:'РШ',role:'Технический консультант',area:'Все регионы',company:'KLM',focus:'Подбор шинопровода и технические решения',phone:'+992 00 000 00 05',email:'r.sharipov@klm.example'},
- {name:'Зарина Юсуфова',initials:'ЗЮ',role:'Специалист по тендерам',area:'Все регионы',company:'KLM',focus:'Закупки, документация и тендерные процедуры',phone:'+992 00 000 00 06',email:'z.yusufova@klm.example'}
-];
-
 const customerContacts = [
  {key:'rogun',name:'Сановбар Шерова',initials:'СШ',role:'Представитель по связям с общественностью',company:'ГРП энергетических сооружений',phone:'+992 37 235 74 16',email:'esia.rogun.hpp@gmail.com',source:'https://rogunges.tj/wp-content/uploads/2025/08/rogun-hpp-esia-non-technical-summary_rus.pdf'},
  {key:'industry',name:'Абубакр Пиров',initials:'АП',role:'Начальник управления горной промышленности',company:'Минпром новых технологий РТ',phone:'+992 930 88 01 52',email:'mining.industry@sanoat.tj',source:'https://tajikistanmining.com/contacts'},
@@ -88,6 +79,7 @@ function customerContact(project){
  if(project.id==='P-019')return customerContacts.find(c=>c.key==='rmjm');
  return customerContacts.find(c=>c.key==='general');
 }
+function projectsForCustomer(contact){return projects.filter(project=>customerContact(project).key===contact.key)}
 function customerContactMarkup(contact,compact=false){
  const phone=contact.phone?`<a href="tel:${contact.phone.replaceAll(' ','')}"${compact?' onclick="event.stopPropagation()"':''}>${contact.phone}</a>`:'';
  const email=contact.email?`<a href="mailto:${contact.email}"${compact?' onclick="event.stopPropagation()"':''}>${contact.email}</a>`:'';
@@ -97,7 +89,7 @@ function customerContactMarkup(contact,compact=false){
 }
 function init(){
  const highCount=projects.filter(p=>p.score>=80).length, averageScore=Math.round(projects.reduce((sum,p)=>sum+p.score,0)/projects.length), actionCount=projects.filter(p=>['Сигнал','Проверен'].includes(p.pipeline)).length;
- qs('#navCount').textContent=projects.length;qs('#meetingNavCount').textContent=meetingPlan.length;qs('#contactNavCount').textContent=contacts.length;qs('#mapProjectCount').textContent=projects.length;qs('#sourceCount').textContent=sources.length;
+ qs('#navCount').textContent=projects.length;qs('#meetingNavCount').textContent=meetingPlan.length;qs('#contactNavCount').textContent=customerContacts.filter(c=>projectsForCustomer(c).length).length;qs('#mapProjectCount').textContent=projects.length;qs('#sourceCount').textContent=sources.length;
  qs('#landingProjectCount').textContent=projects.length;qs('#landingHighCount').textContent=highCount;qs('#landingSourceCount').textContent=sources.length;qs('#demoProjectCount').textContent=projects.length;qs('#demoAverageScore').textContent=averageScore;qs('#demoActionCount').textContent=actionCount;
  renderMetrics();renderTop();renderMiniPipeline();renderSignals();buildFilters();renderProjects();renderKanban();renderMeetings();renderContacts();renderSources();bind();route();
 }
@@ -110,7 +102,7 @@ function filtered(){let term=qs('#projectSearch').value.trim().toLowerCase(), g=
 function renderProjects(){let list=filtered().sort((a,b)=>b.score-a.score);qs('#resultCount').textContent=list.length;qs('#emptyState').style.display=list.length?'none':'block';qs('#projectGrid').innerHTML=list.map(p=>{let c=customerContact(p);return `<article class="project-card" data-id="${p.id}" role="button" tabindex="0" aria-label="Открыть проект ${p.name}"><div class="card-top"><span class="sector">${p.sector}</span><span class="confidence">${p.confidence}</span></div><h3>${p.name}</h3><p class="meta">⌖ ${p.city} · ${p.company}</p><div class="potential"><span>ПОТЕНЦИАЛ KLM</span><b>${p.potential}</b></div><div class="card-footer"><span class="stage">${p.stage}</span><span class="project-score">${p.score}/100</span></div><p class="next-step">→ ${p.next}</p>${customerContactMarkup(c,true)}</article>`}).join('');bindProjectCards()}
 function renderKanban(){let stages=['Сигнал','Проверен','Квалифицирован','Контакт'];qs('#kanban').innerHTML=stages.map(s=>{let list=projects.filter(p=>p.pipeline===s);return `<div class="kanban-col"><div class="kanban-head">${s}<span>${list.length}</span></div>${list.map(p=>`<div class="kanban-card" data-id="${p.id}" role="button" tabindex="0" aria-label="Открыть проект ${p.name}"><b>${p.name}</b><p>${p.company}</p><p>Следующий шаг: ${p.next}</p><div class="progress"><i style="width:${p.score}%"></i></div></div>`).join('')}</div>`}).join('');bindProjectCards()}
 function renderSources(){qs('#sourcesGrid').innerHTML=sources.map(s=>`<article class="source-card"><div class="source-logo">${s.icon}</div><h3>${s.name}</h3><p>${s.desc}</p><div class="source-meta"><span>${s.type} · Класс ${s.grade} · ${s.count} сигналов</span><a href="${s.url}" target="_blank" rel="noopener">Открыть ↗</a></div></article>`).join('')}
-function renderContacts(){let term=qs('#contactSearch').value.trim().toLowerCase();let list=contacts.filter(c=>!term||Object.values(c).join(' ').toLowerCase().includes(term));qs('#contactCount').textContent=list.length;qs('#contactsGrid').innerHTML=list.map(c=>`<article class="contact-card"><div class="contact-head"><span class="contact-avatar">${c.initials}</span><span class="contact-status">● Доступен</span></div><h3>${c.name}</h3><p class="contact-role">${c.role}</p><div class="contact-details"><span><small>КОМПАНИЯ</small><b>${c.company}</b></span><span><small>РЕГИОН</small><b>${c.area}</b></span></div><p class="contact-focus">${c.focus}</p><div class="contact-actions"><a href="tel:${c.phone.replaceAll(' ','')}">${c.phone}</a><a href="mailto:${c.email}">Написать →</a></div></article>`).join('')}
+function renderContacts(){let term=qs('#contactSearch').value.trim().toLowerCase();let list=customerContacts.map(c=>({...c,projects:projectsForCustomer(c)})).filter(c=>c.projects.length&&(!term||[...Object.values(c),...c.projects.map(p=>p.name)].join(' ').toLowerCase().includes(term)));qs('#contactCount').textContent=list.length;qs('#contactsGrid').innerHTML=list.map(c=>{let phone=c.phone?`<a href="tel:${c.phone.replaceAll(' ','')}">${c.phone}</a>`:'',email=c.email?`<a href="mailto:${c.email}">Написать →</a>`:'';return `<article class="contact-card"><div class="contact-head"><span class="contact-avatar">${c.initials}</span><span class="contact-status">✓ Публичный контакт</span></div><h3>${c.name}</h3><p class="contact-role">${c.role}</p><div class="contact-details"><span><small>ОРГАНИЗАЦИЯ</small><b>${c.company}</b></span><span><small>ПРОЕКТОВ</small><b>${c.projects.length}</b></span></div><p class="contact-focus">${c.projects.map(p=>p.name).join(' · ')}</p><div class="contact-actions">${phone}${email}</div><a class="contact-source" href="${c.source}" target="_blank" rel="noopener">Проверить официальный источник ↗</a></article>`}).join('')}
 function renderMeetings(){
  const confirmed=meetingPlan.filter(m=>m.status==='Контакт установлен').length;
  const preparing=meetingPlan.filter(m=>m.status==='Подготовка').length;
